@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookmarks</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        .category {
+            border: 2px solid #6c757d;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            position: relative;
+            background: #f8f9fa;
+        }
+        .category-title {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #f8f9fa;
+            padding: 0 10px;
+            color: #6c757d;
+            font-weight: bold;
+        }
+        .bookmark-card {
+            transition: transform 0.2s;
+            height: 100%;
+        }
+        .bookmark-card:hover {
+            transform: scale(1.05);
+        }
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+        }
+        .alert-container {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1050;
+            width: 50%;
+        }
+        .fade-out {
+            opacity: 1;
+            transition: opacity 1s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container mt-4">
+        <div class="alert-container" id="alert-container"></div>
+        <div class="row">
+            <div class="col-12">
+                <div class="category">
+                    <div class="category-title">Erklärung</div>
+                    <p>Diese Seite dient als Bookmark-Sammlung. Kategorien sind durch Rahmen gegliedert. Jede Karte enthält ein Icon, einen Titel, eine Beschreibung und einen Link. Manche Einträge haben spezielle Funktionen, z. B. das Kopieren einer SSH-Konfiguration.</p>
+                </div>
+            </div>
+        </div>
+        <div id="bookmarks-container" class="row"></div>
+    </div>
+
+    <script>
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById("alert-container");
+            const alertElement = document.createElement("div");
+            alertElement.className = `alert alert-${type} alert-dismissible fade show`;
+            alertElement.role = "alert";
+            alertElement.innerHTML = `${message} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+            alertContainer.appendChild(alertElement);
+            
+            setTimeout(() => {
+                alertElement.classList.add("fade-out");
+                setTimeout(() => alertElement.remove(), 1000);
+            }, 3000);
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showAlert("SSH-Konfiguration wurde kopiert!", "success");
+            }).catch(err => {
+                showAlert("Fehler beim Kopieren!", "danger");
+            });
+        }
+
+        function renderBookmarks(bookmarks) {
+            const container = document.getElementById("bookmarks-container");
+            container.innerHTML = ""; // Vorherige Inhalte löschen
+
+            bookmarks.forEach(category => {
+                let categoryHtml = `
+                    <div class="col-md-6">
+                        <div class="category">
+                            <div class="category-title">${category.category}</div>
+                            <div class="row">
+                `;
+
+                category.items.forEach(bookmark => {
+                    if (bookmark.action === "copy") {
+                        categoryHtml += `
+                            <div class="col-md-6 mb-3">
+                                <div class="card bookmark-card">
+                                    <div class="card-body text-center">
+                                        <i class="fa ${bookmark.icon} fa-3x text-${bookmark.color}"></i>
+                                        <h5 class="card-title mt-2">${bookmark.title}</h5>
+                                        <p class="card-text">${bookmark.description}</p>
+                                        <button onclick="copyToClipboard('${bookmark.text.replace(/\n/g, '\\n')}')" class="btn btn-outline-${bookmark.color} btn-sm">
+                                            <i class="fa fa-copy"></i> Kopieren
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        categoryHtml += `
+                            <div class="col-md-6 mb-3">
+                                <div class="card bookmark-card">
+                                    <div class="card-body text-center">
+                                        <i class="fa ${bookmark.icon} fa-3x text-${bookmark.color}"></i>
+                                        <h5 class="card-title mt-2">${bookmark.title}</h5>
+                                        <p class="card-text">${bookmark.description}</p>
+                                        <a href="${bookmark.link}" class="btn btn-outline-${bookmark.color} btn-sm" target="_blank">
+                                            <i class="fa fa-external-link-alt"></i> Besuchen
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+
+                categoryHtml += `</div></div></div>`;
+                container.innerHTML += categoryHtml;
+            });
+        }
+
+        function fetchBookmarks() {
+            fetch("bookmarks.json")
+                .then(response => response.json())
+                .then(data => renderBookmarks(data))
+                .catch(error => showAlert("Fehler beim Laden der Bookmarks!", "danger"));
+        }
+
+        document.addEventListener("DOMContentLoaded", fetchBookmarks);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

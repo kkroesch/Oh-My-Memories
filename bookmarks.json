@@ -1,0 +1,55 @@
+{
+  "categories": [
+    {
+      "category": "Web Development",
+      "items": [
+        {
+          "icon": "fa-code",
+          "title": "MDN Docs",
+          "description": "Web-Technologien und Standards",
+          "link": "https://developer.mozilla.org",
+          "color": "primary"
+        },
+        {
+          "icon": "fa-laptop-code",
+          "title": "CSS Tricks",
+          "description": "Tipps und Tricks für CSS",
+          "link": "https://css-tricks.com",
+          "color": "success"
+        }
+      ]
+    },
+    {
+      "category": "Tools",
+      "items": [
+        {
+          "icon": "fa-terminal",
+          "title": "GitHub",
+          "description": "Code-Hosting-Plattform",
+          "link": "https://github.com",
+          "color": "danger"
+        },
+        {
+          "icon": "fa-cloud",
+          "title": "Netlify",
+          "description": "Websites hosten",
+          "link": "https://www.netlify.com",
+          "color": "info"
+        }
+      ]
+    },
+    {
+      "category": "CLI",
+      "items": [
+        {
+          "icon": "fa-clipboard",
+          "title": "SSH Config",
+          "description": "Kopiere SSH-Konfiguration",
+          "action": "copy",
+          "text": "Host myserver\n  HostName example.com\n  User user\n  IdentityFile ~/.ssh/id_rsa\n",
+          "color": "secondary"
+        }
+      ]
+    }
+  ]
+}
