@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookmarks
+  labels:
+    app: bookmarks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookmarks
+  template:
+    metadata:
+      labels:
+        app: bookmarks
+    spec:
+      containers:
+        - name: bookmarks
+          image: localhost/bookmarks:latest
+          ports:
+            - containerPort: 80
