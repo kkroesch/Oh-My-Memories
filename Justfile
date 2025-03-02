@@ -35,3 +35,6 @@ clean:
 
 yaml2json:
     yq -o=json bookmarks.yaml > bookmarks.json
+
+deploy:
+    kubectl apply -k deployment
